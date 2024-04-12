@@ -731,7 +731,7 @@ def nearest_neighbour_imputation(
         )
 
     elif multiple_possible_class_vars is None:
-
+        print("Inside elif block")
         # subset data to remove blanks and potential donors with missing imputation class variables
         knn_impute_subset = data_post_imputation[
             (data_post_imputation[imputation_class_vars_w_na].notna().all(axis=1))
@@ -752,6 +752,12 @@ def nearest_neighbour_imputation(
             data_columns.get_loc(var) for var in donor_characteristics_col_names
         ]
         donor_distance_col_idx = data_columns.get_loc(donor_distance_col_name)
+
+        # TODO: FIx
+        print("About to test: knn_impute_subset[imputation_class_vars_w_na]", knn_impute_subset[imputation_class_vars_w_na])
+        print(type(knn_impute_subset[imputation_class_vars_w_na]))
+        print(knn_impute_subset[imputation_class_vars_w_na].shape)
+
 
         # Need to min-max scale imputation class variables before determining nearest neighbours.
         imputation_class_vars_transformed = minmax_scaler.fit_transform(

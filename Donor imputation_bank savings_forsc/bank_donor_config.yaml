@@ -2,9 +2,9 @@
 
 
 PATHS:
-      data_donor_imp: 'C:\Users\CPFGINNY\Desktop\Statscan\5_Final programs\Ginny\bank_donor_output_forsc.xlsx'
-      data_hist_imp: 'C:\Users\CPFGINNY\Desktop\Statscan\5_Final programs\Loic\W3_W4_combined_for_trend_imputation.xlsx'
-      output_dir: 'C:\Users\CPFGINNY\Desktop\Statscan\5_Final programs\Ginny'
+      data_donor_imp: '/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_output_forsc.xlsx'
+      data_hist_imp: '/workspaces/debug/data/W3_W4_combined_for_trend_imputation.xlsx'
+      output_dir: '/workspaces/debug/Donor imputation_bank savings_forsc/'
       output_file_donor: test_output_donor_bank.xlsx
       output_file_hist_income: test_output_hist_income.xlsx
       output_file_hist_housing: test_output_hist_housing.xlsx

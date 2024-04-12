@@ -64,8 +64,13 @@ enumerated_val_to_range = dict(
     zip(range(1, len(non_monetary_buckets) + 1), non_monetary_buckets)
 )
 
+
+
+
+# YAML_FILENAME = "./config.yaml"
+YAML_FILENAME = "/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_config.yaml"
 # read in pipeline configuration
-with open("./config.yaml", "r") as stream:
+with open(YAML_FILENAME, "r") as stream:
     config = yaml.safe_load(stream)
 
 # Format paths
@@ -103,6 +108,7 @@ def main(config=config):
                         df_data_donor, var_to_impute, imputation_class_vars
                     )
 
+                    print("About to call nearest_neighbour_imputation...")
                     # apply nearest neighbour imputation
                     df_data_donor_post_knn = nearest_neighbour_imputation(
                         df_data_donor_preprocessed,
