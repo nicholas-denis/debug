@@ -667,9 +667,6 @@ def nearest_neighbour_imputation(
     # make a copy to apply imputation
     data_post_imputation = data.copy()
 
-    print("data_post_imputation.head(): ", data_post_imputation.head())
-    print("data_post_imputation.shape: ", data_post_imputation.shape)
-
     # get imputation details and donor details' variable names
     imputation_flag_col_name = f"{var_to_impute}_imputation_flag"
     imputation_type_col_name = f"{var_to_impute}_imputation_type"
@@ -681,7 +678,6 @@ def nearest_neighbour_imputation(
         f"{var_to_impute}_donor_{var}" for var in imputation_class_vars
     ]
     donor_distance_col_name = f"{var_to_impute}_donor_distance"
-    print("donor_characteristics_col_names: ", donor_characteristics_col_names)
 
     # initialize donor use tracking dictionary
     donor_use_track_dict = {k: 0 for k in data_post_imputation[userid_col_name]}
@@ -692,49 +688,27 @@ def nearest_neighbour_imputation(
     data_post_imputation[imputation_class_vars_w_na] = data_post_imputation[
         imputation_class_vars
     ].replace(missing_values_to_impute, pd.NA)
-    print("data_post_imputation.shape: ", data_post_imputation.shape)
-    print("data_post_imputation.head(): ", data_post_imputation.head())
     
     data_post_imputation[post_imputation_col_name_w_na] = data_post_imputation[
         post_imputation_col_name
     ].replace(missing_values_to_impute, pd.NA)
-    print("data_post_imputation.shape: ", data_post_imputation.shape)
-    print("data_post_imputation.head(): ", data_post_imputation.head())
     
     if multiple_possible_class_vars is not None:
-        print("*"*100)
-        print("inside multiple_possible_class_vars_w_na is not None")
         multiple_possible_class_vars_w_na = [
             f"{var}_w_na" for var in multiple_possible_class_vars
         ]
         data_post_imputation[multiple_possible_class_vars_w_na] = data_post_imputation[
             multiple_possible_class_vars
         ].replace(missing_values_to_impute, pd.NA)
-        print("data_post_imputation.shape: ", data_post_imputation.shape)
-        print("data_post_imputation.head(): ", data_post_imputation.head())
-        print("Now leaving if block")
+
 
     # initialize min-max scaler
     minmax_scaler = MinMaxScaler()
 
-    print("data_post_imputation.shape: ", data_post_imputation.shape)
-    print("data_post_imputation.head(): ", data_post_imputation.head())
-    # subset data to remove blanks and potential donors with missing imputation class variables
-    print("imputation_class_vars_w_na: ", imputation_class_vars_w_na)
-    print("data_post_imputation[imputation_class_vars_w_na].notna().sum() ", data_post_imputation[imputation_class_vars_w_na].notna().sum())
-    
-
     knn_impute_subset = data_post_imputation[
         (data_post_imputation[imputation_class_vars_w_na].notna().all(axis=1))
     ].copy()
-    print("knn_impute_subset.shape: ", knn_impute_subset.shape)
-    print("knn_impute_subset.head(): ", knn_impute_subset.head())
 
-    print("data.dtypes: ", data.dtypes)
-    print("data_post_imputation.dtypes: ", data_post_imputation.dtypes)
-    print("knn_impute_subset.dtypes: ", knn_impute_subset.dtypes)
-    print("knn_impute_subset[imputation_class_vars].dtypes: ", knn_impute_subset[imputation_class_vars].dtypes)
-    print("data[imputation_class_vars].head(): ", data[imputation_class_vars].head())
 
     # Need to determine if any imputation class variables are strings.
     # If so, then call KNN imputation function with categorical variable.
@@ -744,11 +718,7 @@ def nearest_neighbour_imputation(
         ]
     )
 
-    ####### categorical_imputation_class_vars is an empty list
-    print("categorical_imputation_class_vars: ", categorical_imputation_class_vars)
-
     if categorical_imputation_class_vars:
-        print("inside if")
         data_post_imputation = nearest_neighbour_imputation_categorical(
             data=knn_impute_subset,
             var_to_impute=var_to_impute,
@@ -764,13 +734,10 @@ def nearest_neighbour_imputation(
         )
 
     elif multiple_possible_class_vars is None:
-        print("inside elif")
         # subset data to remove blanks and potential donors with missing imputation class variables
-        print("knn_impute_subset (before): ", knn_impute_subset.head(3))
         knn_impute_subset = data_post_imputation[
             (data_post_imputation[imputation_class_vars_w_na].notna().all(axis=1))
         ].copy()
-        print("knn_impute_subset (before()): ", knn_impute_subset.head(3))
 
         # reset index of subset, but retain the old index to facilitate updating the full imput data set later
         knn_impute_subset = knn_impute_subset.reset_index(names="original_index")
@@ -788,10 +755,6 @@ def nearest_neighbour_imputation(
         ]
         donor_distance_col_idx = data_columns.get_loc(donor_distance_col_name)
 
-        # TODO: FIx
-        print("About to test: knn_impute_subset[imputation_class_vars_w_na]", knn_impute_subset[imputation_class_vars_w_na])
-        print(type(knn_impute_subset[imputation_class_vars_w_na]))
-        print(knn_impute_subset[imputation_class_vars_w_na].shape)
 
         # Need to min-max scale imputation class variables before determining nearest neighbours.
         imputation_class_vars_transformed = minmax_scaler.fit_transform(
@@ -806,17 +769,7 @@ def nearest_neighbour_imputation(
             return_distance=True,
             dualtree=True,
         )
-        print("len(neighbour_distances_indices)")
-        a,b = neighbour_distances_indices
-        print(a.shape)
-        print(b.shape)
-        print(a[:3])
-        print(b[:3])
-        print("knn_impute_subset.index: ", knn_impute_subset.index)
-        x = list(knn_impute_subset.index)
-        print(len(x))
-        print(list(range(len(x))) == x)
-        print("DONE")
+
         for tree_index_num, data_index_num in enumerate(knn_impute_subset.index):
 
             # tree_index_num tracks the rows of the BallTree / distance + donor index array
@@ -827,13 +780,7 @@ def nearest_neighbour_imputation(
             # First condition disregards blanks.
             # Second condition filters for rows that contain a missing value as defined by missing_values_to_impute.
             # condition formerly pd.isna(data_post_imputation[post_imputation_col_name][data_index_num])
-            print("knn_impute_subset.shape: ", knn_impute_subset.shape)
-            print("tree_index_num, data_index_num: ", tree_index_num, data_index_num)
-            print("knn_impute_subset[post_imputation_col_name].head(): ", knn_impute_subset[post_imputation_col_name].head(data_index_num+2))
-            print("\n")
-            print("a refresher on knn_impute_subset.index: ")
-            print(knn_impute_subset.index)
-            print(" ok....")
+
             if pd.notna(
                 knn_impute_subset[post_imputation_col_name][data_index_num]
             ) and (
@@ -871,7 +818,6 @@ def nearest_neighbour_imputation(
 
                     # else, donor is eligible; end neighbour search
                     else:
-                        print("inside the else block with neighbour_rank and donor_idx:  ", neighbour_rank, donor_idx)
                         continue_neighbour_search = False
 
                         # impute value into post-imputation variable
@@ -935,10 +881,18 @@ def nearest_neighbour_imputation(
                                     bins_to_labels,
                                 )
                             )
-                        print("*"*100)
-                        print("All done doing imputation stuff, there are resets to the index")
-                        print("*"*100)
-                        print(knn_impute_subset.head(10))
+                        ###################################
+                        # Nick Fix
+                        ###################################
+                        """
+                        I believe what Loic was attempting was to take the knn_impute_subset and reset the indices back to the original indices, 
+                        so that later he could use knn_impute_subset to update data_post_imputation.
+
+                        However, since we are enumerating over knn_impute_subset indices, we shouldn't reset them, as this is catastrophic.
+
+                        Hence, we will make a copy of knn_impute_subset and use that to update data_post_imputation
+                        
+                        # OLD CODE:
                         # reset index for subset that underwent imputation
                         knn_impute_subset = knn_impute_subset.set_index(
                             "original_index"
@@ -950,6 +904,11 @@ def nearest_neighbour_imputation(
                         # update full data set to include post-imputation information
                         data_post_imputation.update(knn_impute_subset)
                         print("after update: ", print(knn_impute_subset.head(10)))
+                        """
+                        knn_impute_subset_copy = knn_impute_subset.copy()
+                        knn_impute_subset_copy = knn_impute_subset_copy.set_index("original_index")
+                        knn_impute_subset_copy = knn_impute_subset_copy.rename_axis(index=None)
+                        data_post_imputation.update(knn_impute_subset_copy)
 
             else:
                 print("Skipping because doesn't satisfy the if statement")
@@ -1163,31 +1122,6 @@ def nearest_neighbour_imputation(
 ########## Historical Imputation Utility Functions ##########
 
 
-def ratio_imputation(
-    avg_current_wave: float, avg_previous_wave: float, val_past_wave: float
-) -> float:
-    """Function for applying ratio imputation.
-
-    Parameters
-    ----------
-
-    avg_current_wave : float
-        Average value in the current wave.
-
-    avg_previous_wave : float
-        Average value in the previous wave.
-
-    val_past_wave : float
-        Value in the previous wave.
-
-    Returns
-    -------
-
-    (avg_current_wave / avg_previous_wave) * val_past_wave : float
-        Imputed value using ratio imputation.
-
-    """
-    return (avg_current_wave / avg_previous_wave) * val_past_wave
 
 
 def construct_house_loan_donor_pool_one_house(

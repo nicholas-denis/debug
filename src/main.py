@@ -80,8 +80,9 @@ for path_key in config["PATHS"].keys():
 
 def main(config=config):
 
-    if config["IMPUTATION"]["DONOR_IMPUTATION"]:
-        print("Config: ", config)
+    donor_imputation = config.get("IMPUTATION", {}).get("DONOR_IMPUTATION", None)
+    if donor_imputation:
+    #if config["IMPUTATION"]["DONOR_IMPUTATION"]:
         df_data_donor = pd.read_excel(config["PATHS"]["data_donor_imp"])
         df_data_donor["userid"] = range(0, len(df_data_donor))
 
@@ -104,16 +105,10 @@ def main(config=config):
                     imputation_class_vars = config["IMPUTATION"]["DONOR_IMPUTATION"][
                         var_to_impute
                     ]
-                    print("\nimputation_class_vars: ", imputation_class_vars)
                     df_data_donor_preprocessed = data_preprocessing_store_donor_info(
                         df_data_donor, var_to_impute, imputation_class_vars
                     )
-                    print("df_data_donor.shape: ", df_data_donor.shape)
-                    print(df_data_donor.head(2))
-                    print("df_data_donor_preprocessed.shape: ", df_data_donor_preprocessed.shape)
-                    print(df_data_donor_preprocessed.head(2))
                           
-                    print("About to call nearest_neighbour_imputation...")
                     # apply nearest neighbour imputation
                     df_data_donor_post_knn = nearest_neighbour_imputation(
                         df_data_donor_preprocessed,
@@ -130,7 +125,12 @@ def main(config=config):
                     )
                     progress_bar.update(1)
 
-    if config["IMPUTATION"]["HISTORICAL_IMPUTATION"]["HOUSING_VARS"]:
+
+
+    # Using get() to safely access nested dictionary keys
+    housing_vars = config.get("IMPUTATION", {}).get("HISTORICAL_IMPUTATION", {}).get("HOUSING_VARS", None)
+    if housing_vars:
+    #if config["IMPUTATION"]["HISTORICAL_IMPUTATION"]["HOUSING_VARS"]:
 
         df_data_hist = pd.read_excel(config["PATHS"]["data_hist_imp"])
 
@@ -250,7 +250,9 @@ def main(config=config):
                     )
                     progress_bar.update(1)
 
-    if config["IMPUTATION"]["HISTORICAL_IMPUTATION"]["INCOME_VARS"]:
+    income_vars = config.get("IMPUTATION", {}).get("HISTORICAL_IMPUTATION", {}).get("INCOME_VARS", None)
+    if income_vars:
+    #if config["IMPUTATION"]["HISTORICAL_IMPUTATION"]["INCOME_VARS"]:
 
         df_data_hist = pd.read_excel(config["PATHS"]["data_hist_imp"])
 
@@ -342,4 +344,6 @@ def main(config=config):
 
 
 if __name__ == "__main__":
+    # TODO: implement argparser to allow for command line arguments for location of yaml file
+    # then we need to remove the hardcoded loading of yaml file at the top of the script
     main(config=config)
