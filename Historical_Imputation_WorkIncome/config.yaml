@@ -1,0 +1,34 @@
+#For historial imputation of work income variable only
+
+PATHS:
+
+      data_hist_imp: 'Hist_Imputation_Q140_forsc.xlsx'
+      output_dir: 'C:\Users\cpfabctl\Desktop\StatCan_Imputation'
+  
+      output_file_hist_income: test_output_hist_income.xlsx
+   
+
+
+
+      HISTORICAL_IMPUTATION:
+
+          
+
+          INCOME_VARS:
+          # This could be income, bonus or net earnings
+
+              'Q140a_1_1':
+                    desc: 'Work income variable'
+                    var_previous_wave: 'W4_Q140a_1_1'
+                    var_number_jobs_current_wave : 'Q128_1' 
+                    var_number_jobs_previous_wave : 'W4_Q128_1' 
+                    var_ssic_current_wave : 'GO_Q130a_1'
+                    var_ssic_previous_wave : 'W4_GO_Q130a_1'
+                    var_last_complete_int : 'Q2001'
+                    var_job_change : 'Job_change'
+                    userid : 'userid'
+                    imputation_class_vars : ['GO_Q130a_1', 'GO_Q131a_1']
+                    values_to_impute : [-1, 888, 999]
+
+
+             
