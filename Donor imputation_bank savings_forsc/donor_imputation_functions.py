@@ -663,7 +663,7 @@ def nearest_neighbour_imputation(
     data_post_imputation : pd.DataFrame
         Pandas DataFrame of output data, with imputations applied to variable to be imputed.
     """
-
+    print("Inside nearest_neighbour_imputation ")
     # make a copy to apply imputation
     data_post_imputation = data.copy()
 
@@ -679,6 +679,7 @@ def nearest_neighbour_imputation(
     ]
     donor_distance_col_name = f"{var_to_impute}_donor_distance"
 
+    print("HERE")
     # initialize donor use tracking dictionary
     donor_use_track_dict = {k: 0 for k in data_post_imputation[userid_col_name]}
 
@@ -703,10 +704,13 @@ def nearest_neighbour_imputation(
     # initialize min-max scaler
     minmax_scaler = MinMaxScaler()
 
+    
     # subset data to remove blanks and potential donors with missing imputation class variables
     knn_impute_subset = data_post_imputation[
         (data_post_imputation[imputation_class_vars_w_na].notna().all(axis=1))
     ].copy()
+    print("knn_impute_subset.shape: ", knn_impute_subset.shape)
+    print("knn_impute_subset.head(): ", knn_impute_subset.head(3))
 
     # Need to determine if any imputation class variables are strings.
     # If so, then call KNN imputation function with categorical variable.
@@ -715,7 +719,10 @@ def nearest_neighbour_imputation(
             knn_impute_subset[imputation_class_vars].dtypes == "object"
         ]
     )
+    print("categorical_imputation_class_vars: ", categorical_imputation_class_vars)
+    print("about to go into block...")
     if categorical_imputation_class_vars:
+        print("inside if block")
         data_post_imputation = nearest_neighbour_imputation_categorical(
             data=knn_impute_subset,
             var_to_impute=var_to_impute,
@@ -896,6 +903,7 @@ def nearest_neighbour_imputation(
     # if there are imputation class variables that can be used in lieu of the other,
     # then separate distance matrices need to be computed per variable in multiple_possible_class_vars
     else:
+        print("ELSE")
         # this list stores tuples of distances and neighbour indices per multiple_possible_class_vars variable
         list_neighbour_distances_indices = []
 
