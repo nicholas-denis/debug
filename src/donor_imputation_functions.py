@@ -1115,6 +1115,9 @@ def nearest_neighbour_imputation(
 
                         # update full data set to include post-imputation information
                         data_post_imputation.update(knn_impute_subset)
+    
+    # update the post imputation variable column with the imputed values
+    data_post_imputation[post_imputation_col_name_w_na] = data_post_imputation[post_imputation_col_name]
 
     return data_post_imputation
 
