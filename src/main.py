@@ -4,6 +4,7 @@ from collections import Counter
 from pathlib import Path
 from tqdm.auto import tqdm
 import yaml
+import argparse
 
 
 # dummy data to test out donor imputation with
@@ -65,21 +66,7 @@ enumerated_val_to_range = dict(
 )
 
 
-
-
-# YAML_FILENAME = "./config.yaml"
-#YAML_FILENAME = "/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_config.yaml"
-
-YAML_FILENAME = "/workspaces/debug/Historical_Imputation_WorkIncome/config.yaml"
-
-# read in pipeline configuration
-with open(YAML_FILENAME, "r") as stream:
-    config = yaml.safe_load(stream)
-
-for path_key in config["PATHS"].keys():
-    config["PATHS"][path_key] = Path(config["PATHS"][path_key])
-
-def main(config=config):
+def main(config):
 
     donor_imputation = config.get("IMPUTATION", {}).get("DONOR_IMPUTATION", None)
     if donor_imputation:
@@ -351,8 +338,28 @@ def main(config=config):
                     )
                     progress_bar.update(1)
 
+def parse_arguments():
+
+    # YAML_FILENAME = "./config.yaml"
+    #YAML_FILENAME = "/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_config.yaml"
+    #YAML_FILENAME = "/workspaces/debug/Historical_Imputation_WorkIncome/config.yaml"
+
+    parser = argparse.ArgumentParser(description="Process YAML configuration file path")
+    parser.add_argument("yaml_file", nargs="?", type=str, default="config.yaml", help="Path to the YAML configuration file")
+    args = parser.parse_args()
+    return args
 
 if __name__ == "__main__":
-    # TODO: implement argparser to allow for command line arguments for location of yaml file
-    # then we need to remove the hardcoded loading of yaml file at the top of the script
+
+
+    args = parse_arguments()
+    yaml_file_path = args.yaml_file
+
+    # read in pipeline configuration
+    with open(yaml_file_path, "r") as stream:
+        config = yaml.safe_load(stream)
+    
+    for path_key in config["PATHS"].keys():
+        config["PATHS"][path_key] = Path(config["PATHS"][path_key])
+
     main(config=config)
