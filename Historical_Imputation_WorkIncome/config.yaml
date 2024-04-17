@@ -1,34 +1,56 @@
 #For historial imputation of work income variable only
 
 PATHS:
-
-      data_hist_imp: 'Hist_Imputation_Q140_forsc.xlsx'
-      output_dir: 'C:\Users\cpfabctl\Desktop\StatCan_Imputation'
-  
-      output_file_hist_income: test_output_hist_income.xlsx
+    data_hist_imp: '/workspaces/debug/data/W3_W4_combined_for_trend_imputation.xlsx'
+    output_dir: '/workspaces/debug/data'
+    output_file_hist_income: test_output_hist_income.xlsx
+    output_file_hist_housing: test_output_hist_housing.xlsx
    
-
-
+IMPUTATION:
 
       HISTORICAL_IMPUTATION:
 
-          
+          HOUSING_VARS:
+          # This could be income, bonus or net earnings
+
+              'Value_Hse_Loan':
+                    desc: 'Housing loan variable'
+                    var_housing_loan_previous_wave: 'Value_Hse_Loan_prev_wave'
+                    var_number_properties_current_wave: 'Total_Prop'
+                    var_number_properties_previous_wave: 'Total_Prop_prev_wave'
+                    var_hdb_indicator_current_wave: 'Whether_HDB_Housing'
+                    var_hdb_indicator_previous_wave: 'Whether_HDB_Housing_prev_wave'
+                    imputation_class_vars : ['Total_Purchase_Price', 'Q140a_1_1']
+                    values_to_impute : [-1, 88]
+
 
           INCOME_VARS:
           # This could be income, bonus or net earnings
 
               'Q140a_1_1':
                     desc: 'Work income variable'
-                    var_previous_wave: 'W4_Q140a_1_1'
+                    var_previous_wave: 'Q140a_1_1_prev_wave' 
                     var_number_jobs_current_wave : 'Q128_1' 
-                    var_number_jobs_previous_wave : 'W4_Q128_1' 
+                    var_number_jobs_previous_wave : 'Q128_1_prev_wave' 
                     var_ssic_current_wave : 'GO_Q130a_1'
-                    var_ssic_previous_wave : 'W4_GO_Q130a_1'
-                    var_last_complete_int : 'Q2001'
-                    var_job_change : 'Job_change'
-                    userid : 'userid'
                     imputation_class_vars : ['GO_Q130a_1', 'GO_Q131a_1']
                     values_to_impute : [-1, 888, 999]
 
 
-             
+              'Q142a_1_1':
+                    desc: 'Bonus income variable'
+                    var_previous_wave: 'Q142a_1_1_prev_wave' 
+                    var_number_jobs_current_wave : 'Q128_1' 
+                    var_number_jobs_previous_wave : 'Q128_1_prev_wave' 
+                    var_ssic_current_wave : 'GO_Q130a_1'
+                    imputation_class_vars : ['GO_Q130a_1', 'GO_Q131a_1']
+                    values_to_impute : [-1, 888, 999]
+              
+              'Q143a_1_1':
+                    desc: 'Business net earnings income variable'
+                    var_previous_wave: 'Q143a_1_1_prev_wave' 
+                    var_number_jobs_current_wave : 'Q128_1' 
+                    var_number_jobs_previous_wave : 'Q128_1_prev_wave' 
+                    var_ssic_current_wave : 'GO_Q130a_1'
+                    imputation_class_vars : ['GO_Q130a_1', 'GO_Q131a_1']
+                    values_to_impute : [-1, 888, 999]

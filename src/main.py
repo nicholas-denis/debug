@@ -68,15 +68,16 @@ enumerated_val_to_range = dict(
 
 
 # YAML_FILENAME = "./config.yaml"
-YAML_FILENAME = "/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_config.yaml"
+#YAML_FILENAME = "/workspaces/debug/Donor imputation_bank savings_forsc/bank_donor_config.yaml"
+
+YAML_FILENAME = "/workspaces/debug/Historical_Imputation_WorkIncome/config.yaml"
+
 # read in pipeline configuration
 with open(YAML_FILENAME, "r") as stream:
     config = yaml.safe_load(stream)
 
-# Format paths
 for path_key in config["PATHS"].keys():
     config["PATHS"][path_key] = Path(config["PATHS"][path_key])
-
 
 def main(config=config):
 
@@ -232,6 +233,7 @@ def main(config=config):
                         == 1
                     ][
                         [
+                            "userid",
                             "Total_Purchase_Price",
                             "Total_Purchase_Price_prev_wave",
                             var_hdb_indicator_current_wave,
@@ -244,6 +246,9 @@ def main(config=config):
                             f"{var_current_wave}_imputation_flag",
                             f"{var_current_wave}_imputation_type",
                             f"{var_current_wave}_imputed_value",
+                            "avg_previous_wave",
+                            "avg_current_wave",
+                            "ratio"
                         ]
                     ].to_excel(
                         writer, sheet_name=var_current_wave, index=False
@@ -326,6 +331,7 @@ def main(config=config):
                         == 1
                     ][
                         [
+                            "userid",
                             var_number_jobs_current_wave,
                             var_number_jobs_previous_wave,
                             var_ssic_current_wave,
@@ -336,6 +342,9 @@ def main(config=config):
                             f"{var_current_wave}_imputed_value",
                             f"{var_current_wave}_imputation_flag",
                             f"{var_current_wave}_imputation_type",
+                            'avg_previous_wave', 
+                            'avg_current_wave', 
+                            'ratio'
                         ]
                     ].to_excel(
                         writer, sheet_name=var_current_wave, index=False

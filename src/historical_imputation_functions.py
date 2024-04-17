@@ -344,7 +344,6 @@ def housing_historical_imputation_by_row(
     if pd.isna(row_post_imputation[post_imputation_col_name]) & (
         ~pd.isna(row_post_imputation[var_previous_wave])
     ):
-
         # if there is only 1 property
         if row_post_imputation[var_number_properties] == 1:
 
@@ -389,8 +388,15 @@ def housing_historical_imputation_by_row(
                 imputation_type_col_name = f"{var_current_wave}_imputation_type"
                 row_post_imputation[imputation_type_col_name] = "Historical"
 
+                row_post_imputation['avg_previous_wave'] = avg_val_previous_wave
+                row_post_imputation['avg_current_wave'] = avg_val_current_wave
+
+                row_post_imputation['ratio'] = avg_val_current_wave / avg_val_previous_wave
+
+
         # if there are multiple properties
         elif row_post_imputation[var_number_properties] > 1:
+
 
             # only impute if there are sufficient records based on imputation parameters
             if imputation_group_multi_house.shape[0] > min_records_req:
@@ -424,6 +430,11 @@ def housing_historical_imputation_by_row(
                 # set imputation type to Historical
                 imputation_type_col_name = f"{var_current_wave}_imputation_type"
                 row_post_imputation[imputation_type_col_name] = "Historical"
+
+                row_post_imputation['avg_previous_wave'] = avg_val_previous_wave
+                row_post_imputation['avg_current_wave'] = avg_val_current_wave
+
+                row_post_imputation['ratio'] = avg_val_current_wave / avg_val_previous_wave
 
     return row_post_imputation
 
@@ -520,7 +531,6 @@ def historical_imputation_housing(
         ),
         axis=1,
     )
-
     return data_post_imputation
 
 
@@ -649,6 +659,10 @@ def income_historical_imputation_by_row(
             imputation_type_col_name = f"{var_current_wave}_imputation_type"
             row_post_imputation[imputation_type_col_name] = "Historical"
 
+            row_post_imputation['avg_previous_wave'] = avg_val_previous_wave.values[0]
+            row_post_imputation['avg_current_wave'] = avg_val_current_wave.values[0]
+
+            row_post_imputation['ratio'] = avg_val_current_wave.values[0] / avg_val_previous_wave.values[0]
     return row_post_imputation
 
 
@@ -741,5 +755,4 @@ def historical_imputation_income(
         ),
         axis=1,
     )
-
     return data_post_imputation
