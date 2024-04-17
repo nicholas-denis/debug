@@ -679,6 +679,9 @@ def nearest_neighbour_imputation(
     ]
     donor_distance_col_name = f"{var_to_impute}_donor_distance"
 
+    # initialize set to track imputed rows
+    imputed_rows_idx = set()
+
     # initialize donor use tracking dictionary
     donor_use_track_dict = {k: 0 for k in data_post_imputation[userid_col_name]}
 
@@ -815,6 +818,11 @@ def nearest_neighbour_imputation(
                         in missing_values_to_impute
                     ):
                         neighbour_rank += 1
+                    
+                    elif(
+                        donor_idx in imputed_rows_idx
+                    ):
+                        neighbour_rank +=1
 
                     # else, donor is eligible; end neighbour search
                     else:
@@ -847,6 +855,9 @@ def nearest_neighbour_imputation(
 
                         # increment donor's use count in donor use tracking dictionary
                         donor_use_track_dict[donor_userid] += 1
+
+                        # add the index of the imputed row to the set of imputed rows
+                        imputed_rows_idx.add(data_index_num)       
 
                         # save donor characteristics
                         for n, var in enumerate(imputation_class_vars):
@@ -881,6 +892,7 @@ def nearest_neighbour_imputation(
                                     bins_to_labels,
                                 )
                             )
+
                         ###################################
                         # Nick Fix
                         ###################################
