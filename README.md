@@ -58,9 +58,11 @@ cd <path/to/your/folder/>
 
 4. Explore the different .yaml files. Each one is setup for a particular experiment. The YAML file determines the entire imputation being applied. More information is provided below.
 
-5. Refer to the `experiments/` directory for Jupyter notebooks that hosts imputation experiments.
+5. <optional>Copy required data sources into the /data/ folder.
 
-6. Refer to the `examples/` directory for Jupyter notebooks that demonstrate the usage and application of the imputation methods.
+6. Refer to the `experiments/` directory for Jupyter notebooks that hosts imputation experiments.
+
+7. Refer to the `examples/` directory for Jupyter notebooks that demonstrate the usage and application of the imputation methods.
 
 ## Virtual Environment
 We recommend setting up a virtual environment to manage and contain this project's dependencies, as opposed to using the global environment.
