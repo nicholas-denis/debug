@@ -45,25 +45,22 @@ The repository is organized as follows:
 
 To get started with the Impudon Python Redesign repository, follow these steps:
 
-1. SSH Clone the repository to your local machine using the following command:
+
+1. Navigate to the repository directory:
 
 ```bash
-git clone git@gitlab-ssh.k8s.cloud.statcan.ca:impudon/impudon-python.git <repo-name>
+cd <path/to/your/folder/>
 ```
 
-2. Navigate to the cloned repository directory:
+2. Set up the necessary dependencies and environment for running the code. Refer to the documentation provided in each script or notebook for any specific requirements. See below for more information.
 
-```bash
-cd <repo-name>
-```
+3. Explore the `src/` directory to find the Python scripts implementing the donor imputation and historical imputation features.
 
-3. Set up the necessary dependencies and environment for running the code. Refer to the documentation provided in each script or notebook for any specific requirements.
-
-4. Explore the `src/` directory to find the Python scripts implementing the donor imputation and historical imputation features.
+4. Explore the different .yaml files. Each one is setup for a particular experiment. The YAML file determines the entire imputation being applied. More information is provided below.
 
 5. Refer to the `experiments/` directory for Jupyter notebooks that hosts imputation experiments.
 
-5. Refer to the `examples/` directory for Jupyter notebooks that demonstrate the usage and application of the imputation methods.
+6. Refer to the `examples/` directory for Jupyter notebooks that demonstrate the usage and application of the imputation methods.
 
 ## Virtual Environment
 We recommend setting up a virtual environment to manage and contain this project's dependencies, as opposed to using the global environment.
@@ -108,7 +105,70 @@ To install the dependencies once your virtual environment is activated:
 $ pip install -r requirements.txt
 ```
 
+
+## YAML Config files
+
+The YAML config files are used by the /src/main.py script and must be set properly. The first section involves paths to the source data and where the resulting data should be saved. For repeated experiments you may want to change the save paths so that previous experiment outputs are not overrun. Feel free to create as many YAML files as you wish, one for each pertinent experiment.
+
+There are some examples of usage. Note that if you wish to only perform historical imputation, then the donor imputation section should be removed. The converse is also true. If you would like to do donor and historical imputation, then have both respective sections present.
+
+Donor imputation, as can be seen in the example yaml files, requires that you map the donor columns to a list of columns used for nearest neighbours. Example:
+```config
+...
+
+DONOR_IMPUTATION:
+    'column_1': ['column_x', 'column_y', 'column_abc']
+    'column_341': ['AABDDB_2', 'column_yyyz']
+...
+```
  
+ In the above example, all the rows that are missing data in the column with title "column_1" will be imputed using the nearest neighbour imputation approach, which uses the columns with names 'column_x', 'column_y' and 'column_abc' for computing distances. After this column is imputed, the next to be imputed will be rows that are missing data in the column titled 'column_341', which will use the columns named 'AABDDB_2', 'column_yyyz' for computing distances in nearest neighbours.
+
+ **NOTE**: The set of donors is found by finding all rows that have NO missing values for each of the columns (ex., ['column_x', 'column_y', 'column_abc']). If there exist no rows that satisfy this, then the program will throw an error, as there are no feasible donors, since each row is missing at least one value from these columns.
+
+ **NOTE**: As well, if a given row is missing a value in 'column_1' but ALSO in any of the columns used for nearest neighbour search (ex. any of these columns: ['column_x', 'column_y', 'column_abc']), then that row will not be subjected to imputation. This is because computing a distance based on those columns is impossible, as it is missing a value for one of those dimensions.
+ 
+
+## Running the script /src/main.py
+
+From the command line simply cd into </path/to/src/> and execute:
+```bash
+python main.py <path_to_yaml_file>
+```
+For example:
+
+```bash
+python main.py iris_config.yaml
+```
+or
+```bash
+python main.py my_custom_config.yaml
+```
+or 
+```bash
+python main.py bank_donor_config.yaml
+```
+or
+```bash
+python main.py historical_housing_config.yaml
+```
+or if your yaml file is in a different folder than /src/:
+```bash
+python main.py /the/path/to/your/super/special/config.yaml
+```
+
+
+Please keep in mind that the yaml file determines the entire script process. 
+Also note that the '#' is a commenting character, meaning anything that follows a '#' is ignored and not read.
+Finally, please have a look at the paths among the different yaml files. You will note some using forward and some using backward slashes, example:
+```config
+path_var = 'C:\some\windows\path\'
+linux_var = '/the/path/is/this/way/'
+```
+This has to do with the structure used by Linux vs Windows machines. Please adapt your paths according to your operating systems.
+
+
+
 ## License
  
 Unless otherwise specified, the source code of this project is covered under Crown Copyright, Government of Canada, and is distributed under the [MIT License](https://github.com/StatCan/impudon-redesign/-/blob/main/LICENSE).

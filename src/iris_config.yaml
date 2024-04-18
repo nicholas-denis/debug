@@ -1,0 +1,20 @@
+
+
+
+PATHS:
+      data_donor_imp: 'C:\Users\muhiloi\Desktop\data\donor_imputation_data.xlsx'
+      data_hist_imp: 'C:\Users\muhiloi\Desktop\data\W3_W4_combined_for_trend_imputation.xlsx'
+      output_dir: 'C:\Users\muhiloi\Desktop\data'
+      output_file_donor: test_output_donor.xlsx
+      output_file_hist_income: test_output_hist_income.xlsx
+      output_file_hist_housing: test_output_hist_housing.xlsx
+
+
+IMPUTATION:
+
+      DONOR_IMPUTATION:
+              # 1. Add a new line for every variable that needs to be imputated with donor imputation
+              # 2. Format: <variable-name> : <list-of-imputation-class-variables>
+              
+              'sepal width (cm)': ['species', 'sepal length (cm)']
+              'petal width (cm)': ['species', 'sepal length (cm)']
