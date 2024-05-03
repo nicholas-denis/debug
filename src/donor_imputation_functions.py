@@ -446,6 +446,9 @@ def nearest_neighbour_imputation_categorical(
     ]
     donor_distance_col_idx = data_columns.get_loc(donor_distance_col_name)
 
+    # initialize set to track imputed rows
+    imputed_rows_idx = set()
+
     # initialize min-max scaler
     minmax_scaler = MinMaxScaler()
 
@@ -529,6 +532,11 @@ def nearest_neighbour_imputation_categorical(
                             in missing_values_to_impute
                         ):
                             neighbour_rank += 1
+                        
+                        # fourth check: if donor is an imputed row, then continue neighbour search
+                        elif donor_idx in imputed_rows_idx:
+                            neighbour_rank += 1
+                        
 
                         # else, donor is eligible; end neighbour search
                         else:
@@ -582,6 +590,9 @@ def nearest_neighbour_imputation_categorical(
                             data_post_imputation_by_slices[slice].iloc[
                                 data_index_num, donor_distance_col_idx
                             ] = donor_dist
+
+                            # add the index of the imputed row to the set of imputed rows
+                            imputed_rows_idx.add(data_index_num)  
 
                             # # save sub-dataframe in dictionary tracking data post-imputation
                             # data_post_imputation_by_slices[slice] = subset_data
@@ -720,7 +731,6 @@ def nearest_neighbour_imputation(
             knn_impute_subset[imputation_class_vars].dtypes == "object"
         ]
     )
-
     if categorical_imputation_class_vars:
         data_post_imputation = nearest_neighbour_imputation_categorical(
             data=knn_impute_subset,
