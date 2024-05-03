@@ -613,6 +613,7 @@ def income_historical_imputation_by_row(
     # var_current_wave is missing for row
     # var_previous_wave was not imputed
     # same number of jobs in previous and current waves
+    # var_current wave is -1
     if (
         pd.isna(row_post_imputation[post_imputation_col_name])
         & (~pd.isna(row_post_imputation[var_previous_wave]))
@@ -620,6 +621,8 @@ def income_historical_imputation_by_row(
             row_post_imputation[num_jobs_current_wave]
             == row_post_imputation[num_jobs_previous_wave]
         )
+        & (row_post_imputation[var_current_wave] == -1)
+        
     ):
 
         # only impute if there are sufficient records based on imputation parameters
