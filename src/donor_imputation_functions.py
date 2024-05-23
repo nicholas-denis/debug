@@ -84,6 +84,18 @@ def data_preprocessing_store_donor_info(
     imputation_type_col_name = f"{var_to_impute}_imputation_type"
     data_prepped[imputation_type_col_name] = ""
 
+    bucketed_code_column_name = f"{var_to_impute}_bucketed_code"
+    data_prepped[bucketed_code_column_name] = ""
+
+    bucket_lower_bound_column_name = f"{var_to_impute}_bucket_lower_bound"
+    data_prepped[bucket_lower_bound_column_name] = ""
+
+    bucket_upper_bound_column_name = f"{var_to_impute}_bucket_upper_bound"
+    data_prepped[bucket_upper_bound_column_name] = ""
+
+    bucketed_code_column_name = f"{var_to_impute}_bucketed_code"
+    data_prepped[bucketed_code_column_name] = ""
+
     # Create column that contains donated, imputed value.
     # If imputation not required or no donor found, then imputed_value is NaN.
     imputed_val_col_name = f"{var_to_impute}_imputed_value"
@@ -415,6 +427,10 @@ def nearest_neighbour_imputation_categorical(
         f"{var_to_impute}_donor_{var}" for var in imputation_class_vars
     ]
     donor_distance_col_name = f"{var_to_impute}_donor_distance"
+    bucketed_code_column_name = f"{var_to_impute}_bucketed_code"
+    bucket_lower_bound_column_name = f"{var_to_impute}_bucket_lower_bound"
+    bucket_upper_bound_column_name = f"{var_to_impute}_bucket_upper_bound"
+
 
     # initialize donor use tracking dictionary
     donor_use_track_dict = {k: 0 for k in data_post_imputation[userid_col_name]}
@@ -446,6 +462,9 @@ def nearest_neighbour_imputation_categorical(
         data_columns.get_loc(var) for var in donor_characteristics_col_names
     ]
     donor_distance_col_idx = data_columns.get_loc(donor_distance_col_name)
+    bucketed_code_col_idx = data_columns.get_loc(bucketed_code_column_name)
+    bucket_lower_bound_col_idx = data_columns.get_loc(bucket_lower_bound_column_name)
+    bucket_upper_bound_col_idx = data_columns.get_loc(bucket_upper_bound_column_name)
 
     # initialize set to track imputed rows
     imputed_rows_idx = set()
@@ -546,12 +565,25 @@ def nearest_neighbour_imputation_categorical(
                             # Retrieve bucket code for donor's value
                             donor_bucket_code = subset_data[post_imputation_col_name][donor_idx]
 
+                            data_post_imputation_by_slices[slice].iloc[
+                                data_index_num, bucketed_code_col_idx
+                            ] = donor_bucket_code
+
                             # Generate random continuous value within bucket range
                             for bucket_index, (lower_bound, upper_bound) in enumerated_val_to_range.items():
                                 if lower_bound <= donor_bucket_code < upper_bound:
                                     break
 
-                            imputed_value = random.uniform(lower_bound, upper_bound)
+                            data_post_imputation_by_slices[slice].iloc[
+                                data_index_num, bucket_lower_bound_col_idx
+                            ] = lower_bound
+
+                            data_post_imputation_by_slices[slice].iloc[
+                                data_index_num, bucket_upper_bound_col_idx
+                            ] = upper_bound
+
+
+                            imputed_value = round(random.uniform(lower_bound, upper_bound))
 
                             # impute value into post-imputation variable
                             data_post_imputation_by_slices[slice].iloc[
@@ -567,15 +599,6 @@ def nearest_neighbour_imputation_categorical(
                             data_post_imputation_by_slices[slice].iloc[
                                 data_index_num, imputation_type_col_idx
                             ] = "KNN"
-
-                            # save imputed value
-                            #data_post_imputation_by_slices[slice].iloc[
-                            #    data_index_num, imputed_val_col_idx
-                            #] = data_post_imputation_by_slices[slice][
-                            #    post_imputation_col_name
-                            #][
-                            #    donor_idx
-                            #]
 
                             # save imputed value
                             data_post_imputation_by_slices[slice].iloc[
@@ -700,7 +723,10 @@ def nearest_neighbour_imputation(
     donor_characteristics_col_names = [
         f"{var_to_impute}_donor_{var}" for var in imputation_class_vars
     ]
+    bucketed_code_column_name = f"{var_to_impute}_bucketed_code"
     donor_distance_col_name = f"{var_to_impute}_donor_distance"
+    bucket_lower_bound_column_name = f"{var_to_impute}_bucket_lower_bound"
+    bucket_upper_bound_column_name = f"{var_to_impute}_bucket_upper_bound"
     # initialize set to track imputed rows
     imputed_rows_idx = set()
 
@@ -780,6 +806,10 @@ def nearest_neighbour_imputation(
             data_columns.get_loc(var) for var in donor_characteristics_col_names
         ]
         donor_distance_col_idx = data_columns.get_loc(donor_distance_col_name)
+        bucketed_code_col_idx = data_columns.get_loc(bucketed_code_column_name)
+        bucket_lower_bound_col_idx = data_columns.get_loc(bucket_lower_bound_column_name)
+        bucket_upper_bound_col_idx = data_columns.get_loc(bucket_upper_bound_column_name)
+
 
 
         # Need to min-max scale imputation class variables before determining nearest neighbours.
@@ -852,11 +882,26 @@ def nearest_neighbour_imputation(
 
                         # Retrieve bucket code for donor's value
                         donor_bucket_code = knn_impute_subset[post_imputation_col_name][donor_idx]
+
+                        knn_impute_subset.iloc[
+                            data_index_num, bucketed_code_col_idx
+                        ] = donor_bucket_code
+
+
                         # Generate random continuous value within bucket range
                         for bucket_index, (lower_bound, upper_bound) in enumerated_val_to_range.items():
                             if lower_bound <= donor_bucket_code < upper_bound:
                                 break
-                        imputed_value = random.uniform(lower_bound, upper_bound)
+
+                        knn_impute_subset.iloc[
+                            data_index_num, bucket_lower_bound_col_idx
+                        ] = lower_bound
+
+                        knn_impute_subset.iloc[
+                            data_index_num, bucket_upper_bound_col_idx
+                        ] = upper_bound
+
+                        imputed_value = round(random.uniform(lower_bound, upper_bound))
 
                         # impute value into post-imputation variable
                         knn_impute_subset.iloc[
@@ -872,11 +917,6 @@ def nearest_neighbour_imputation(
                         knn_impute_subset.iloc[
                             data_index_num, imputation_type_col_idx
                         ] = "KNN"
-
-                        # save imputed value
-                        #knn_impute_subset.iloc[data_index_num, imputed_val_col_idx] = (
-                        #    knn_impute_subset[post_imputation_col_name][donor_idx]
-                        #)
 
                         # save imputed value
                         knn_impute_subset.iloc[data_index_num, imputed_val_col_idx] = imputed_value
@@ -1163,5 +1203,6 @@ def nearest_neighbour_imputation(
     
     # update the post imputation variable column with the imputed values
     data_post_imputation[post_imputation_col_name_w_na] = data_post_imputation[post_imputation_col_name]
+    data_post_imputation = data_post_imputation.drop(post_imputation_col_name_w_na, axis=1)
 
     return data_post_imputation
