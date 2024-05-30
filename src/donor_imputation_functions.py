@@ -994,9 +994,6 @@ def nearest_neighbour_imputation(
                         knn_impute_subset_copy = knn_impute_subset_copy.set_index("original_index")
                         knn_impute_subset_copy = knn_impute_subset_copy.rename_axis(index=None)
                         data_post_imputation.update(knn_impute_subset_copy)
-
-            else:
-                print("Skipping because doesn't satisfy the if statement")
     # if there are imputation class variables that can be used in lieu of the other,
     # then separate distance matrices need to be computed per variable in multiple_possible_class_vars
     else:
