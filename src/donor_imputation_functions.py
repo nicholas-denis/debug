@@ -537,7 +537,7 @@ def nearest_neighbour_imputation_categorical(
                         donor_userid = subset_data[userid_col_name][donor_idx]
 
                         # first check: donor use does not exceed max_donor_use.
-                        if donor_use_track_dict[donor_userid] > max_donor_use:
+                        if donor_use_track_dict[donor_userid] >= max_donor_use:
                             neighbour_rank += 1
 
                         # second check: if closest donor is itself, then continue neighbour search
@@ -857,7 +857,7 @@ def nearest_neighbour_imputation(
                     donor_userid = knn_impute_subset[userid_col_name][donor_idx]
 
                     # first check: donor use does not exceed max_donor_use.
-                    if donor_use_track_dict[donor_userid] > max_donor_use:
+                    if donor_use_track_dict[donor_userid] >= max_donor_use:
                         neighbour_rank += 1
 
                     # second check: if closest donor is itself, then continue neighbour search
@@ -1112,7 +1112,7 @@ def nearest_neighbour_imputation(
                     donor_userid = knn_impute_subset[userid_col_name][donor_idx]
 
                     # first check: donor use does not exceed max_donor_use.
-                    if donor_use_track_dict[donor_userid] > max_donor_use:
+                    if donor_use_track_dict[donor_userid] >= max_donor_use:
                         neighbour_rank += 1
 
                     # second check: if closest donor is itself, then continue neighbour search
