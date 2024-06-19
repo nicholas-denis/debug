@@ -1,7 +1,9 @@
 """
 Notes for running the script:
-1. Edit the path in CONFIG_PATH (lien 16) to point to the historical imputation config file
-2. To run the script: pytest historical_imputation_testing.py
+1. Edit the path in CONFIG_PATH (line 16) to point to the historical imputation config file.
+2. To run the script execute: 
+    cd src
+    pytest historical_imputation_testing.py
 """
 
 import pytest
